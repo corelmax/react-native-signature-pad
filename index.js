@@ -1,12 +1,13 @@
 'use strict';
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import {
   View,
-  ViewPropTypes,
   WebView,
   StyleSheet,
+  ViewPropTypes
 } from 'react-native';
+import PropTypes from 'prop-types'
 
 
 import htmlContent from './injectedHtml';
@@ -20,7 +21,7 @@ class SignaturePad extends Component {
   static propTypes = {
     onChange: PropTypes.func,
     onError: PropTypes.func,
-    style: (ViewPropTypes || View.propTypes || {}).style,
+    style: (View.propTypes || ViewPropTypes).style,
     penColor: PropTypes.string,
     dataURL: PropTypes.string,
   };
@@ -36,7 +37,7 @@ class SignaturePad extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {base64DataUrl: props.dataURL || null};
+    this.state = {show: true, base64DataUrl: props.dataURL || null};
     const { backgroundColor } = StyleSheet.flatten(props.style);
     var injectedJavaScript = injectedExecuteNativeFunction
       + injectedErrorHandler
@@ -116,9 +117,20 @@ class SignaturePad extends Component {
 
   };
 
+  reset = () => {
+    this.setState({ show: false, base64DataUrl: null })
+    setTimeout(() => {
+      this.setState({ show: true })
+    }, 100)
+  }
+
   render = () => {
+    const { show } = this.state
+    if(!show) return <View style={this.props.style}></View>
     return (
-        <WebView automaticallyAdjustContentInsets={false}
+        <WebView
+                ref={el => this.wv = el} 
+                automaticallyAdjustContentInsets={false}
                  onNavigationStateChange={this._onNavigationChange}
                  renderError={this._renderError}
                  renderLoading={this._renderLoading}

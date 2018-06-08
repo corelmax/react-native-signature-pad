@@ -69,7 +69,6 @@ class SignaturePad extends Component {
     if(!parameterMatch) {
       return;
     }
-
     while(parameterMatch) {
       var parameterPair = parameterMatch[1]; //For example executeFunction=jsError or arguments=...
 
@@ -87,6 +86,7 @@ class SignaturePad extends Component {
   };
 
   _attemptToExecuteNativeFunctionFromWebViewMessage = (message) => {
+
     if(message.executeFunction && message.arguments) {
       var parsedArguments = JSON.parse(message.arguments);
 
@@ -131,7 +131,8 @@ class SignaturePad extends Component {
         <WebView
                 ref={el => this.wv = el} 
                 automaticallyAdjustContentInsets={false}
-                 onNavigationStateChange={this._onNavigationChange}
+                 onNavigationStateChange={null/*this._onNavigationChange*/}
+                 onMessage={event => this._parseMessageFromWebViewNavigationChange('#' + unescape(event.nativeEvent.data))}
                  renderError={this._renderError}
                  renderLoading={this._renderLoading}
                  source={this.source}
